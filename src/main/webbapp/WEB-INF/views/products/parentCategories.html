@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>parent categories</title>
+</head>
+<body>
+
+<form th:method="GET" th:action="@{/new-category}">
+    <input type="submit" value="Добавить категорию"/></form>
+<br/>
+<form th:method="GET" th:action="@{/new-product}">
+    <input type="submit" value="Добавить продукт"/></form>
+<hr/>
+<div th:each="category : ${categories}">
+    <a th:href="@{/{id}/inner-categories(id=${category.getId()})}"
+       th:text="${category.getName()}">category</a><form th:method="GET" th:action="@{/edit-category/{id}(id=${category.getId()})}"th:object="${product}">
+        <input type="submit" value="Редактировать"/></form><form th:method="DELETE" th:action="@{/delete-category/{id}(id=${category.getId()})}">
+        <input type="submit" value="Удалить"/></form>
+
+
+
+</div>
+
+
+
+</body>
+</html>

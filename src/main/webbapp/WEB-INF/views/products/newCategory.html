@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<form th:method="POST" th:action="@{/add-category}" th:object="${category}">
+    <label for="name">Название: </label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <div style="color:red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">name error</div>
+    <br/>
+    <label for="parent">Родительская категория: </label>
+    <select class="form-control" th:field="*{parent.id}" id="parent">
+        <option th:each="category : ${categories}" th:value="${category.getId()}" th:text="${category.getName()}">
+        </option>
+    </select>
+    <br/>
+
+    <input type="submit" value="Добавить"/>
+</form>
+</body>
+</html>

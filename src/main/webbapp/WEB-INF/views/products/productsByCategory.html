@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+</head>
+<body>
+
+<form th:method="GET" th:action="@{/parent-categories}">
+    <input type="submit" value="Перейти к категориям"/></form>
+<br/>
+<form th:method="GET" th:action="@{/new-product}">
+    <input type="submit" value="Добавить продукт"/></form>
+<hr/>
+<div th:each="product : ${products}">
+    <a th:href="@{/product/{id}(id=${product.getId()})}"
+       th:text="${product.getName()+' , '+ product.getAmount()+' , '+product.getUnit().getNomination()}"></a></div>
+
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta  http-equiv="content-type" content="text/html" charset="UTF-8">
+    <title>edit category</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/update-category/{id}(id=${category.getId()})}" th:object="${category}">
+    <label for="name">Название: </label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <div style="color:red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">name error</div>
+    <br/>
+    <label for="parent">Родительская категория: </label>
+    <select  class="form-control" th:field="*{parent.id}" id="parent">
+        <option th:each="category : ${categories}" th:value="${category.getId()}" th:text="${category.getName()}">
+        </option>
+    </select>
+    <br/>
+    <input type="submit" value="Редактировать"/>
+</form>
+</body>
+</html>

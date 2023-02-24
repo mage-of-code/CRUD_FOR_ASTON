@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>successfully</title>
+</head>
+<body>
+Товар добавлен
+
+<form th:method="GET" th:action="@{/inner-categories/{id}(id=${categoryId})}">
+    <input type="submit" value="Перейти к списку товаров этой категории"/>
+</form>
+
+<form th:method="GET" th:action="@{/parent-categories}">
+    <input type="submit" value="Перейти к категориям"/>
+</form>
+
+
+
+
+
+
+</body>
+</html>
