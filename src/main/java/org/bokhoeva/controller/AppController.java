@@ -9,8 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class AppController {
@@ -22,47 +22,47 @@ public class AppController {
     }
 
     @GetMapping("/parent-categories")
-    public String getParentCategories(Model model) {
-        model.addAttribute("categories", productDao.getCategories(false,false,1));
+    public String getParentCategories(Model model) throws SQLException {
+        model.addAttribute("categories", productDao.getCategories(false, false, 1));
         return "products/parentCategories";
     }
 
     @GetMapping("/{id}/inner-categories")
-    public String getInnerCategories(Model model, @PathVariable("id") int parentId) {
-        List<Category> categories = productDao.getCategories(false,false,parentId);
-        if(!categories.isEmpty()){
-            model.addAttribute("categories",categories);
-            return  "products/innerCategories";
+    public String getInnerCategories(Model model, @PathVariable("id") int parentId) throws SQLException {
+        List<Category> categories = productDao.getCategories(false, false, parentId);
+        if (!categories.isEmpty()) {
+            model.addAttribute("categories", categories);
+            return "products/innerCategories";
         }
-        return "redirect:/inner-categories/"+parentId;
+        return "redirect:/inner-categories/" + parentId;
     }
 
     @GetMapping("/inner-categories/{id}")
-    public String getProductsByInnerCategories(@PathVariable("id") int categoryId, Model model) {
+    public String getProductsByInnerCategories(@PathVariable("id") int categoryId, Model model) throws SQLException {
         model.addAttribute("products", productDao.getProductsByCategory(categoryId));
         return "products/productsByCategory";
     }
 
     @GetMapping("/product/{id}")
-    public String getProduct(@PathVariable("id") int productId, Model model) {
+    public String getProduct(@PathVariable("id") int productId, Model model) throws SQLException {
         model.addAttribute("product", productDao.getProduct(productId))
-                .addAttribute("categories", productDao.getCategories(true,false, 0))
+                .addAttribute("categories", productDao.getCategories(true, false, 0))
                 .addAttribute("units", productDao.getAllUnits())
                 .addAttribute("parameters", productDao.getParametersOfProduct(productId));
         return "products/showProduct";
     }
 
     @GetMapping("/new-product")
-    public String newProduct(Model model) {
+    public String newProduct(Model model) throws SQLException {
         Product product = new Product();
-        model.addAttribute("categories", productDao.getCategories(true,false,0))
+        model.addAttribute("categories", productDao.getCategories(true, false, 0))
                 .addAttribute("units", productDao.getAllUnits())
                 .addAttribute(product);
         return "products/newProduct";
     }
 
     @PostMapping("/add-product")
-    public String addProduct(@ModelAttribute("product") @Valid Product product, BindingResult bindingResult, Model model) {
+    public String addProduct(@ModelAttribute("product") @Valid Product product, BindingResult bindingResult, Model model) throws SQLException {
         if (bindingResult.hasErrors()) {
             return "products/newProduct";
         } else {
@@ -76,7 +76,7 @@ public class AppController {
 
     @PatchMapping("/update-product/{id}")
     public String updateProduct(@ModelAttribute("product") @Valid Product product, BindingResult bindingResult,
-                                @PathVariable("id") int id) {
+                                @PathVariable("id") int id) throws SQLException {
         if (bindingResult.hasErrors()) {
             return "products/showProduct";
         } else {
@@ -87,16 +87,16 @@ public class AppController {
     }
 
     @GetMapping("/new-category")
-    public String newCategory(Model model) {
+    public String newCategory(Model model) throws SQLException {
         Category category = new Category();
-        model.addAttribute("categories", productDao.getCategories(false,true,0))
+        model.addAttribute("categories", productDao.getCategories(false, true, 0))
                 .addAttribute(category);
 
         return "products/newCategory";
     }
 
     @PostMapping("/add-category")
-    public String addCategory(@ModelAttribute("category") @Valid Category category, BindingResult bindingResult) {
+    public String addCategory(@ModelAttribute("category") @Valid Category category, BindingResult bindingResult) throws SQLException {
         if (bindingResult.hasErrors()) {
             return "products/newCategory";
         } else {
@@ -106,15 +106,15 @@ public class AppController {
     }
 
     @GetMapping("/edit-category/{id}")
-    public String editCategory(Model model, @PathVariable("id") int id) {
-        model.addAttribute("categories", productDao.getCategories(false,true,0))
+    public String editCategory(Model model, @PathVariable("id") int id) throws SQLException {
+        model.addAttribute("categories", productDao.getCategories(false, true, 0))
                 .addAttribute("category", productDao.getCategory(id));
         return "products/editCategory";
     }
 
     @PatchMapping("/update-category/{id}")
     public String updateCategory(@ModelAttribute("category") @Valid Category category, BindingResult bindingResult,
-                                 @PathVariable("id") int id) {
+                                 @PathVariable("id") int id) throws SQLException {
         if (bindingResult.hasErrors()) {
             return "products/editCategory";
         } else {
@@ -125,18 +125,16 @@ public class AppController {
 
 
     @DeleteMapping("/delete-product/{categoryId}/{productId}")
-    public String deleteProduct(@PathVariable("categoryId") int category, @PathVariable("productId") int product,Model model) {
+    public String deleteProduct(@PathVariable("categoryId") int category, @PathVariable("productId") int product, Model model) throws SQLException {
         productDao.deleteProduct(product);
-        model.addAttribute("categoryId",category);
+        model.addAttribute("categoryId", category);
         return "products/productDeleted";
 
     }
 
     @DeleteMapping("/delete-category/{id}")
-    public String deleteCategory(@PathVariable("id") int id) {
+    public String deleteCategory(@PathVariable("id") int id) throws SQLException {
         productDao.deleteCategory(id);
         return "products/categoryDeleted";
     }
-
-
 }

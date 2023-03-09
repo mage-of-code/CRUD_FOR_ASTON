@@ -26,25 +26,24 @@ public class ProductDao {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
         }
-        
+
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
         }
     }
 
 
-
-
-    public List<Category> getCategories(boolean forProduct, boolean forCategory, int parentId) {
+    public List<Category> getCategories(boolean forProduct, boolean forCategory, int parentId) throws SQLException {
         List<Category> allCategories = new ArrayList<>();
         try {
 
             Statement statement = connection.createStatement();
             ResultSet resultSet = null;
+
             if (forProduct) {
                 resultSet = statement.executeQuery("select id,name from category where id>1 and parent_id>1");
             }
@@ -64,14 +63,16 @@ public class ProductDao {
                 allCategories.add(category);
             }
         } catch (SQLException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+           connection.close();
         }
 
         return allCategories;
     }
 
 
-    public List<Product> getProductsByCategory(int categoryId) {
+    public List<Product> getProductsByCategory(int categoryId) throws SQLException {
         List<Product> products = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
@@ -89,14 +90,17 @@ public class ProductDao {
                 product.setAmount(resultSet.getBigDecimal("amount").setScale(2, RoundingMode.UNNECESSARY));
 
                 products.add(product);
+
             }
         } catch (SQLException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+          connection.close();
         }
         return products;
     }
 
-    public Product getProduct(int id) {
+    public Product getProduct(int id) throws SQLException {
         Product product = new Product();
         try {
             Statement statement = connection.createStatement();
@@ -114,25 +118,31 @@ public class ProductDao {
                 unit.setId(resultSet.getInt("punit"));
                 unit.setNomination(resultSet.getString("unomination"));
                 product.setUnit(unit);
+
             }
         } catch (SQLException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+          connection.close();
         }
         return product;
     }
 
-    public void saveProduct(Product product) {
+    public void saveProduct(Product product) throws SQLException {
         try {
             Statement statement = connection.createStatement();
             String sql = "insert into product(name,category,unit,amount) values('" + product.getName() + "', " + product.getCategory().getId() + " , " + product.getUnit().getId() + ",'" + product.getAmount() + "')";
             statement.executeUpdate(sql);
 
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+          connection.close();
         }
     }
 
-    public void updateProduct(Product product) {
+    public void updateProduct(Product product) throws SQLException {
         try {
 
             PreparedStatement statement =
@@ -145,22 +155,28 @@ public class ProductDao {
 
             statement.executeUpdate();
 
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+          connection.close();
         }
     }
 
-    public void deleteProduct(int id) {
+    public void deleteProduct(int id) throws SQLException {
         try {
             PreparedStatement statement = connection.prepareStatement("delete from product where id=?");
             statement.setInt(1, id);
             statement.executeUpdate();
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+         connection.close();
         }
     }
 
-    public Category getCategory(int id) {
+    public Category getCategory(int id) throws SQLException {
         Category category = new Category();
         try {
             Statement statement = connection.createStatement();
@@ -188,7 +204,11 @@ public class ProductDao {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+
+                connection.close();
+
         }
 
         return category;
@@ -196,29 +216,39 @@ public class ProductDao {
     }
 
 
-    public void saveCategory(Category category) {
+    public void saveCategory(Category category) throws SQLException {
         try {
             Statement statement = connection.createStatement();
             String sql = "insert into category (name,parent_id) values('" + category.getName() + "','" + category.getParent().getId() + "')";
             statement.executeUpdate(sql);
 
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+
+                connection.close();
+
         }
     }
 
 
-    public void deleteCategory(int id) {
+    public void deleteCategory(int id) throws SQLException {
         try {
             PreparedStatement statement = connection.prepareStatement("delete from category where id=?");
             statement.setInt(1, id);
             statement.executeUpdate();
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+
+                connection.close();
+
         }
     }
 
-    public void updateCategory(Category category) {
+    public void updateCategory(Category category) throws SQLException {
         try {
             PreparedStatement statement =
                     connection.prepareStatement("update category set name=?, parent_id=? where id=?");
@@ -229,12 +259,16 @@ public class ProductDao {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+
+                connection.close();
+
         }
     }
 
 
-    public List<Parameter> getParametersOfProduct(int productId) {
+    public List<Parameter> getParametersOfProduct(int productId) throws SQLException {
         List<Parameter> parameters = new ArrayList<>();
 
         try {
@@ -251,16 +285,20 @@ public class ProductDao {
                 parameter.setValue(resultSet.getString("value"));
 
                 parameters.add(parameter);
+
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+             connection.close();
+
         }
         return parameters;
 
 
     }
 
-    public List<Unit> getAllUnits() {
+    public List<Unit> getAllUnits() throws SQLException {
         List<Unit> units = new ArrayList<>();
         try {
 
@@ -275,9 +313,13 @@ public class ProductDao {
                 unit.setNomination(resultSet.getString("nomination"));
 
                 units.add(unit);
+
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
+        }finally {
+
+                connection.close();
         }
         return units;
     }
